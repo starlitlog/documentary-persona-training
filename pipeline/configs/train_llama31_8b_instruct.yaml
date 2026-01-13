@@ -15,21 +15,21 @@ data_source:
 cuda_visible_devices: "0"
 output_dir: outputs/runs
 
-# Training hyperparameters (A100 optimized)
+# Training hyperparameters (RTX 8000 48GB)
 epochs: 3
-batch_size: 8
+batch_size: 4
 lr: 2e-4
-gradient_accumulation_steps: 1
-max_length: 512
+gradient_accumulation_steps: 2
+max_length: 256
 
 # Learning rate schedule
 warmup_ratio: 0.03
 weight_decay: 0.01
 lr_scheduler_type: cosine
 
-# Precision
-bf16: true
-fp16: false
+# Precision (RTX 8000 doesn't support bf16)
+bf16: false
+fp16: true
 
 # LoRA configuration (Higher rank for persona learning)
 lora_r: 64
@@ -50,7 +50,7 @@ logging_steps: 10
 logging_strategy: "steps"
 evaluation_strategy: "steps"
 
-# Memory optimization (disabled - 8B fits easily on A100)
+# Memory optimization (enable if OOM on RTX 8000)
 gradient_checkpointing: false
 
 # DataLoader optimization

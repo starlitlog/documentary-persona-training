@@ -57,11 +57,13 @@ Open a new Colab notebook and run:
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 
-MODEL_REPO = "ylliprifti/documentary-personas"  # Replace with actual repo
+MODEL_REPO = "ylliprifti/documentary-personas"
+SUBFOLDER = "llama31-8b-instruct"  # Winning model
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_REPO)
+tokenizer = AutoTokenizer.from_pretrained(MODEL_REPO, subfolder=SUBFOLDER)
 model = AutoModelForCausalLM.from_pretrained(
     MODEL_REPO,
+    subfolder=SUBFOLDER,
     torch_dtype=torch.float16,
     device_map="auto"
 )
@@ -374,9 +376,11 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 
 # Load model
 model_path = "ylliprifti/documentary-personas"
-tokenizer = AutoTokenizer.from_pretrained(model_path)
+subfolder = "llama31-8b-instruct"
+tokenizer = AutoTokenizer.from_pretrained(model_path, subfolder=subfolder)
 model = AutoModelForCausalLM.from_pretrained(
     model_path,
+    subfolder=subfolder,
     torch_dtype=torch.float16
 ).cuda()
 
@@ -527,9 +531,12 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 
 # Load model
-tokenizer = AutoTokenizer.from_pretrained("ylliprifti/documentary-personas")
+model_id = "ylliprifti/documentary-personas"
+subfolder = "llama31-8b-instruct"
+tokenizer = AutoTokenizer.from_pretrained(model_id, subfolder=subfolder)
 model = AutoModelForCausalLM.from_pretrained(
-    "ylliprifti/documentary-personas",
+    model_id,
+    subfolder=subfolder,
     torch_dtype=torch.float16,
     device_map="auto"
 )
@@ -644,11 +651,12 @@ print(response.choices[0].text)
 
 ## Model Card
 
-- **Base Model**: meta-llama/Meta-Llama-3-8B (or variant)
+- **Base Model**: meta-llama/Llama-3.1-8B-Instruct
 - **Fine-tuning Method**: LoRA (r=64, alpha=128)
-- **Training Data**: Documentary transcripts (2020, 2023)
+- **Training Data**: Documentary transcripts (2020, 2023) - 171 samples
 - **Training Framework**: llm-training-workshop
-- **Quantization**: F16 (GGUF)
+- **Final Metrics**: ROUGE-1: 0.345, ROUGE-2: 0.149, BLEU: 0.135
+- **HuggingFace**: [ylliprifti/documentary-personas/llama31-8b-instruct](https://huggingface.co/ylliprifti/documentary-personas/tree/main/llama31-8b-instruct)
 - **Use Case**: Persona role-play, educational dialogue
 - **License**: [Check base model license]
 

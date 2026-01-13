@@ -1,6 +1,6 @@
-# Baseline evaluation - compares against the original (non-fine-tuned) model
-model_path: meta-llama/Meta-Llama-3-8B
-model_subfolder:
+# Baseline evaluation - compares against current best fine-tuned model
+model_path: ylliprifti/documentary-personas
+model_subfolder: llama31-8b-instruct
 dataset_path: ./data/eval
 dataset_pattern: "*.jsonl"
 data_format: prompt_completion

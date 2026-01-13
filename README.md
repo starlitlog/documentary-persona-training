@@ -113,7 +113,7 @@ We trained and evaluated 9 models across two phases:
 
 | Model | Size | Type | ROUGE-1 | Notes |
 |-------|------|------|---------|-------|
-| **Llama 3.1 8B Instruct** | 8B | Instruct | **0.341** | Overall winner - latest Llama + contrastive data |
+| **Llama 3.1 8B Instruct** | 8B | Instruct | **0.345** | Overall winner - latest Llama + contrastive data |
 | Qwen3 32B | 32B | Base | 0.320 | Large model test - standard LoRA, 21 min |
 | Gemma 3 27B | 27B | Base | 0.316 | Multimodal architecture, required special handling |
 
@@ -861,7 +861,7 @@ ylliprifti/documentary-personas/
 | 2026-01-11 | Data augmentation | Complete | Added contrastive examples, 171 training samples |
 | 2026-01-12 | **Gemma 3 27B** | Complete | ROUGE-1: 0.316 - required multimodal handling (Gemma3ForConditionalGeneration) |
 | 2026-01-12 | **Qwen3 32B** | Complete | ROUGE-1: 0.320 - standard LoRA with gradient checkpointing, 21 min training |
-| 2026-01-13 | **Llama 3.1 8B Instruct** | Complete | ROUGE-1: 0.341 - **PHASE 2 WINNER**, best overall |
+| 2026-01-13 | **Llama 3.1 8B Instruct** | Complete | ROUGE-1: 0.345 - **PHASE 2 WINNER**, best overall |
 | 2026-01-13 | **Phase 2 Complete** | Complete | Winner: Llama 3.1 8B Instruct, 70% of target metrics achieved |
 | | **Future Work** | Pending | Interview creators, expand to ~1,500 samples with negative examples |
 
@@ -904,7 +904,7 @@ Phase 2 models were trained on NVIDIA A100 80GB, enabling:
 
 | Model | Size | Type | ROUGE-1 | ROUGE-2 | BLEU | Training Time |
 |-------|------|------|---------|---------|------|---------------|
-| **Llama 3.1 8B Instruct** | 8B | Instruct | **0.341** | **0.142** | **0.123** | ~5 min |
+| **Llama 3.1 8B Instruct** | 8B | Instruct | **0.345** | **0.149** | **0.135** | ~5 min |
 | Qwen3 32B | 32B | Base | 0.320 | - | - | ~21 min |
 | Gemma 3 27B | 27B | Base | 0.316 | - | - | ~25 min |
 
@@ -912,7 +912,7 @@ Phase 2 models were trained on NVIDIA A100 80GB, enabling:
 
 | Rank | Model | Size | Phase | ROUGE-1 | Notes |
 |------|-------|------|-------|---------|-------|
-| 1 | **Llama 3.1 8B Instruct** | 8B | 2 | **0.341** | Phase 2 winner, contrastive data |
+| 1 | **Llama 3.1 8B Instruct** | 8B | 2 | **0.345** | Phase 2 winner, contrastive data |
 | 2 | Llama 3 8B Instruct | 8B | 1 | 0.328 | Phase 1 winner |
 | 3 | Mistral 7B | 7B | 1 | 0.321 | Best base model |
 | 4 | Qwen3 32B | 32B | 2 | 0.320 | Larger model, similar results |
@@ -926,9 +926,9 @@ Phase 2 models were trained on NVIDIA A100 80GB, enabling:
 
 | Metric | Target | Achieved (Best) | Gap |
 |--------|--------|-----------------|-----|
-| ROUGE-1 | 0.45-0.50 | 0.341 | ~70% of target |
-| ROUGE-2 | 0.20-0.25 | 0.142 | ~65% of target |
-| BLEU | 0.18-0.22 | 0.123 | ~65% of target |
+| ROUGE-1 | 0.45-0.50 | 0.345 | ~70% of target |
+| ROUGE-2 | 0.20-0.25 | 0.149 | ~65% of target |
+| BLEU | 0.18-0.22 | 0.135 | ~68% of target |
 
 ---
 
@@ -937,10 +937,14 @@ Phase 2 models were trained on NVIDIA A100 80GB, enabling:
 ### Winner: Llama 3.1 8B Instruct
 
 **Llama 3.1 8B Instruct** is declared the winner of this training experiment with:
-- **ROUGE-1: 0.341** (highest across all models)
-- Consistent improvement from Phase 1 (0.328 → 0.341 = +4%)
+- **ROUGE-1: 0.345** (highest across all models)
+- **ROUGE-2: 0.149**
+- **BLEU: 0.135**
+- Consistent improvement from Phase 1 (0.328 → 0.345 = +5%)
 - Fast training time (~5 min on A100)
 - Good balance of quality and efficiency
+
+**HuggingFace**: [ylliprifti/documentary-personas/llama31-8b-instruct](https://huggingface.co/ylliprifti/documentary-personas/tree/main/llama31-8b-instruct)
 
 ### Key Findings
 
@@ -1012,7 +1016,7 @@ To reach target metrics (ROUGE-1: 0.45+), the project requires significantly mor
 ### Expected Outcome
 
 With ~1,500 quality training samples including negative examples and human validation, the model should achieve:
-- ROUGE-1: 0.45+ (vs current 0.341)
+- ROUGE-1: 0.45+ (vs current 0.345)
 - Clear persona separation (no blending)
 - Consistent tone and knowledge per persona
 
@@ -1044,51 +1048,24 @@ export HF_REPO_ID="username/repo"
 make publish-hf TRAIN_CONFIG=train_llama31_8b
 ```
 
----
+### Using the Winning Model
 
-## Make Help Reference
+```python
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
 
-```
-🚀 LLM Training Pipeline
+# Load the winning model from HuggingFace
+model_id = "ylliprifti/documentary-personas"
+subfolder = "llama31-8b-instruct"
 
-Setup:
-  make init            Full setup: check system deps, create venv, install packages
-  make venv            Create Python virtual environment (.venv) only
-  make install         Install Python packages from requirements.txt only
+tokenizer = AutoTokenizer.from_pretrained(model_id, subfolder=subfolder)
+model = AutoModelForCausalLM.from_pretrained(
+    model_id,
+    subfolder=subfolder,
+    torch_dtype=torch.float16,
+    device_map="auto"
+)
 
-Data Preparation:
-  make convert         Convert ChatGPT JSON exports to training JSONL format
-  make tokenize        Pre-tokenize dataset for faster training
-                       Usage: make tokenize TRAIN_CONFIG=train_llama31_8b
-
-Training & Evaluation:
-  make train           Run LoRA fine-tuning on specified model
-                       Usage: make train TRAIN_CONFIG=train_llama31_8b
-  make train-bg        Run training in tmux (survives disconnect)
-  make eval            Evaluate fine-tuned model against test set
-                       Usage: make eval EVAL_CONFIG=eval_llama31_8b
-  make eval-baseline   Evaluate base model (before fine-tuning)
-
-Model Export:
-  make merge           Merge LoRA adapter weights into base model
-  make gguf            Convert merged model to GGUF format for llama.cpp
-                       Usage: make gguf TRAIN_CONFIG=train_llama31_8b QUANT=Q5_K_M
-  make publish-hf      Upload model to HuggingFace Hub
-                       Usage: HF_REPO_ID=user/repo make publish-hf TRAIN_CONFIG=...
-
-Remote Training:
-  make push            Sync project to remote GPU server via rsync
-  make ssh-init        Initialize venv and install deps on remote server
-  make ssh-train       Run training on remote server (foreground)
-  make ssh-train-bg    Run training on remote server in tmux (background)
-  make ssh-eval        Run evaluation on remote server
-
-Utilities:
-  make clean           Remove cache files and __pycache__ directories
-  make format          Format Python code with black
-  make lint            Run pylint checks on source code
-
-HuggingFace:
-  make hf-login        Login to HuggingFace Hub
-  make hf-cache        Set HF cache to ephemeral disk (saves space on root)
-```
+# Chat with a persona
+prompt = """You are Tilda, an acclaimed actress who runs Drumduan school in Scotland.
+You speak thoughtfully about education and childhood development.
