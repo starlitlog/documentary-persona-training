@@ -216,6 +216,70 @@ No universal pattern - model family matters more than base vs instruct.
 
 ---
 
+## Conclusions
+
+### Winner: Llama 3.1 8B Instruct
+
+**Llama 3.1 8B Instruct** is declared the winner of this training experiment:
+
+| Metric | Value | Target | Achievement |
+|--------|-------|--------|-------------|
+| ROUGE-1 | **0.345** | 0.45-0.50 | 70% |
+| ROUGE-2 | **0.149** | 0.20-0.25 | 65% |
+| BLEU | **0.135** | 0.18-0.22 | 68% |
+
+- Consistent improvement from Phase 1 (0.328 → 0.345 = +5%)
+- Fast training time (~5 min on A100)
+- Good balance of quality and efficiency
+
+**HuggingFace**: [ylliprifti/documentary-personas/llama31-8b-instruct](https://huggingface.co/ylliprifti/documentary-personas/tree/main/llama31-8b-instruct)
+
+### Key Findings
+
+1. **Model size doesn't guarantee better results**: 8B model outperformed 27B and 32B models
+2. **Instruct models work well for persona learning**: Contrary to initial hypothesis, Llama instruct variants consistently outperformed base models
+3. **Data quality > model size**: With limited training samples, architecture efficiency matters more than parameter count
+4. **Contrastive data helps**: Phase 2 contrastive examples improved results by ~5%
+
+### Limitation: Training Data Volume
+
+**Critical constraint: 171 training samples**
+
+The model demonstrated clear learning during training:
+- Loss decreased steadily from ~2.8 to ~0.05
+- Gradient norms remained stable (0.6-1.5 range)
+- Evaluation metrics showed consistent improvement over baseline
+
+However, the limited data volume prevented reaching target metrics:
+- Current: ~70% of target ROUGE-1
+- Gap likely due to insufficient training examples, not model capability
+
+### What We Proved
+
+| Aspect | Status |
+|--------|--------|
+| Model can learn personas | Confirmed - clear improvement over baseline |
+| Training pipeline works | Confirmed - stable training, proper convergence |
+| Contrastive data helps | Confirmed - Phase 2 > Phase 1 |
+| Target metrics achievable | Not with current data volume |
+
+### Path to Target Metrics
+
+To reach ROUGE-1: 0.45+, the project requires:
+
+1. **~1,500 training samples** (currently 171, need ~10x more)
+2. **Interview the creators** - Capture authentic voice from Tilda, Ahsan, Anis
+3. **Add negative examples** - Prevent persona blending
+4. **Human validation** - Review AI-generated data for quality
+
+| Current | Target | Multiplier |
+|---------|--------|------------|
+| 171 samples | ~1,500 samples | ~9x |
+| AI-generated | + Human validated | Quality |
+| Basic Q&A | + Negative examples | New type |
+
+---
+
 ## Using the Trained Model
 
 ```python
@@ -244,20 +308,3 @@ print(response[len(prompt):])
 ```
 
 For detailed usage examples, see [MODEL_USAGE.md](MODEL_USAGE.md).
-
----
-
-## Future Work
-
-To reach target metrics (ROUGE-1: 0.45+):
-
-1. **Interview the creators** - Capture authentic voice directly from Tilda, Ahsan, and Anis
-2. **Expand to ~1,500 training samples** - Currently 171, need ~10x more
-3. **Add negative examples** - Prevent persona blending (Persona A knows X, Persona B does not)
-4. **Human validation** - Review AI-generated training data for quality
-
----
-
-## License
-
-See base model licenses for usage terms.
